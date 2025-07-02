@@ -8,82 +8,229 @@
 </head>
 <body>
 <!-- partial:index.partial.html -->
-<h2>IG Feed Mockup</h2>
-<div class="grid" id="feed">
-  <!-- 12 image cells -->
-  <div class="cell" draggable="true">
-    <label class="upload">
-      📷
-      <input type="file" accept="image/*" onchange="loadImage(event, this)">
-    </label>
-  </div>
-  <div class="cell" draggable="true">
-    <label class="upload">
-      📷
-      <input type="file" accept="image/*" onchange="loadImage(event, this)">
-    </label>
-  </div>
-  <div class="cell" draggable="true">
-    <label class="upload">
-      📷
-      <input type="file" accept="image/*" onchange="loadImage(event, this)">
-    </label>
-  </div>
-  <div class="cell" draggable="true">
-    <label class="upload">
-      📷
-      <input type="file" accept="image/*" onchange="loadImage(event, this)">
-    </label>
-  </div>
-  <div class="cell" draggable="true">
-    <label class="upload">
-      📷
-      <input type="file" accept="image/*" onchange="loadImage(event, this)">
-    </label>
-  </div>
-  <div class="cell" draggable="true">
-    <label class="upload">
-      📷
-      <input type="file" accept="image/*" onchange="loadImage(event, this)">
-    </label>
-  </div>
-  <div class="cell" draggable="true">
-    <label class="upload">
-      📷
-      <input type="file" accept="image/*" onchange="loadImage(event, this)">
-    </label>
-  </div>
-  <div class="cell" draggable="true">
-    <label class="upload">
-      📷
-      <input type="file" accept="image/*" onchange="loadImage(event, this)">
-    </label>
-  </div>
-  <div class="cell" draggable="true">
-    <label class="upload">
-      📷
-      <input type="file" accept="image/*" onchange="loadImage(event, this)">
-    </label>
-  </div>
-  <div class="cell" draggable="true">
-    <label class="upload">
-      📷
-      <input type="file" accept="image/*" onchange="loadImage(event, this)">
-    </label>
-  </div>
-  <div class="cell" draggable="true">
-    <label class="upload">
-      📷
-      <input type="file" accept="image/*" onchange="loadImage(event, this)">
-    </label>
-  </div>
-  <div class="cell" draggable="true">
-    <label class="upload">
-      📷
-      <input type="file" accept="image/*" onchange="loadImage(event, this)">
-    </label>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Instagram Feed Mockup</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #fafafa;
+    }
+    .ig-tabs {
+      display: flex;
+      justify-content: space-around;
+      border-top: 1px solid #ccc;
+      border-bottom: 1px solid #ccc;
+      background: white;
+      padding: 6px 0;
+    }
+    .tab-btn {
+      flex: 1;
+      background: none;
+      border: none;
+      padding: 8px 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: #888;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    .tab-btn .icon {
+      font-size: 20px;
+      margin-bottom: 2px;
+    }
+    .tab-btn.active {
+      color: black;
+      font-weight: bold;
+    }
+    .tab-content {
+      padding: 16px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 4px;
+    }
+    .cell {
+      width: 100%;
+      aspect-ratio: 4 / 5;
+      background: #eee;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .cell img, .cell video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+    .upload input {
+      display: none;
+    }
+    .upload {
+      position: relative;
+      z-index: 2;
+      cursor: pointer;
+      font-size: 24px;
+      background: rgba(255,255,255,0.7);
+      padding: 4px;
+      border-radius: 6px;
+    }
+    .delete {
+      position: absolute;
+      bottom: 6px;
+      right: 6px;
+      background: rgba(255,255,255,0.8);
+      border: none;
+      font-size: 16px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<div class="ig-tabs">
+  <button class="tab-btn active" data-tab="feed">
+    <span class="icon">📷</span>
+    <span class="label">Feed</span>
+  </button>
+  <button class="tab-btn" data-tab="reels">
+    <span class="icon">🎞️</span>
+    <span class="label">Reels</span>
+  </button>
+  <button class="tab-btn" data-tab="tagged">
+    <span class="icon">🏷️</span>
+    <span class="label">Tagged</span>
+  </button>
+</div>
+
+<!-- FEED TAB -->
+<div class="tab-content" id="feed-tab">
+  <div class="grid" id="feed-grid"></div>
+</div>
+
+<!-- REELS TAB -->
+<div class="tab-content" id="reels-tab" style="display: none;">
+  <div class="grid" id="reels-grid"></div>
+</div>
+
+<!-- TAGGED TAB -->
+<div class="tab-content" id="tagged-tab" style="display: none;">
+  <div class="grid">
+    <div class="cell"></div>
+    <div class="cell"></div>
+    <div class="cell"></div>
+    <div class="cell"></div>
   </div>
 </div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    let dragged = null;
+
+    const tabButtons = document.querySelectorAll('.tab-btn');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    tabButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        tabButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        tabContents.forEach(c => c.style.display = 'none');
+        const selectedTab = document.getElementById(`${btn.dataset.tab}-tab`);
+        if (selectedTab) selectedTab.style.display = 'block';
+      });
+    });
+
+    const feedGrid = document.getElementById('feed-grid');
+    const reelsGrid = document.getElementById('reels-grid');
+
+    for (let i = 0; i < 12; i++) {
+      feedGrid.appendChild(createCell('both'));
+      reelsGrid.appendChild(createCell('video'));
+    }
+
+    function createCell(type = 'both') {
+      const cell = document.createElement('div');
+      cell.className = 'cell';
+      cell.setAttribute('draggable', true);
+      cell.innerHTML = `
+        <label class="upload">
+          📷
+          <input type="file" ${type === 'video' ? 'accept="video/*"' : 'accept="image/*,video/*"'} onchange="loadMedia(event, this, '${type}')">
+        </label>
+      `;
+
+      cell.addEventListener('dragstart', () => { dragged = cell; });
+      cell.addEventListener('dragover', e => e.preventDefault());
+      cell.addEventListener('drop', e => {
+        e.preventDefault();
+        if (dragged !== cell) {
+          const temp = cell.innerHTML;
+          cell.innerHTML = dragged.innerHTML;
+          dragged.innerHTML = temp;
+        }
+      });
+
+      return cell;
+    }
+
+    window.loadMedia = function (event, input, type) {
+      const file = input.files[0];
+      if (!file) return;
+
+      const cell = input.closest(".cell");
+      const reader = new FileReader();
+
+      reader.onload = function (e) {
+        let mediaEl = '';
+        if (file.type.startsWith('image')) {
+          mediaEl = `<img src="${e.target.result}" alt="Uploaded Image">`;
+        } else if (file.type.startsWith('video')) {
+          mediaEl = `<video src="${e.target.result}" autoplay muted loop></video>`;
+        } else {
+          alert("Unsupported file type");
+          return;
+        }
+
+        cell.innerHTML = `
+          ${mediaEl}
+          <label class="upload">
+            📷
+            <input type="file" ${type === 'video' ? 'accept="video/*"' : 'accept="image/*,video/*"'} onchange="loadMedia(event, this, '${type}')">
+          </label>
+          <button class="delete" onclick="deleteMedia(this, '${type}')">🗑️</button>
+        `;
+      };
+
+      reader.readAsDataURL(file);
+    };
+
+    window.deleteMedia = function (btn, type) {
+      const cell = btn.closest(".cell");
+      cell.innerHTML = `
+        <label class="upload">
+          📷
+          <input type="file" ${type === 'video' ? 'accept="video/*"' : 'accept="image/*,video/*"'} onchange="loadMedia(event, this, '${type}')">
+        </label>
+      `;
+    };
+  });
+</script>
+
+</body>
+</html>
 <!-- partial -->
   <script  src="./script.js"></script>
 
